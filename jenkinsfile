@@ -6,9 +6,27 @@ pipeline {
     }
 
     stages {
+        stage('Check Repository') {
+            steps {
+                script {
+                    // First check if the repo exists and what branches are available
+                    sh '''
+                        git ls-remote --heads https://github.com/aayanshahirwar/my-static-website.git
+                        echo "Available branches:"
+                        git ls-remote --heads https://github.com/aayanshahirwar/my-static-website.git | cut -f2 | cut -d'/' -f3
+                    '''
+                }
+            }
+        }
+
         stage('gitclone') {
             steps {
-                git 'https://github.com/aayanshahirwar/my-static-website.git'
+                git(
+                    url: 'https://github.com/aayanshahirwar/my-static-website.git',
+                    branch: 'main', // Try 'main' if 'master' doesn't work
+                    changelog: true,
+                    poll: true
+                )
             }
         }
 
@@ -33,9 +51,7 @@ pipeline {
 
     post {
         always {
-            node('linux') {
-                sh 'docker logout'
-            }
+            sh 'docker logout'
         }
     }
 }
