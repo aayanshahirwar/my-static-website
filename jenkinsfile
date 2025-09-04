@@ -3,7 +3,7 @@ pipeline{
 	agent {label 'linux'}
 
 	environment {
-		DOCKERHUB_CREDENTIALS=credentials('santoshahirwar-dockerhub')
+		DOCKERHUB_CREDENTIALS=credentials('santosh-dockerhub')
 	}
 
 	stages {
