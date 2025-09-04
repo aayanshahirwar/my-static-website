@@ -1,46 +1,41 @@
-pipeline{
+pipeline {
+    agent { label 'linux' }
 
-	agent {label 'linux'}
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('santosh-dockerhub')
+    }
 
-	environment {
-		DOCKERHUB_CREDENTIALS=credentials('santosh-dockerhub')
-	}
+    stages {
+        stage('gitclone') {
+            steps {
+                git 'https://github.com/aayanshahirwar/my-static-website.git'
+            }
+        }
 
-	stages {
-	    
-	    stage('gitclone') {
+        stage('Build') {
+            steps {
+                sh 'docker build -t santoshahirwar/reactstatic_test:latest .'
+            }
+        }
 
-			steps {
-				git 'https://github.com/aayanshahirwar/my-static-website.git'
-			}
-		}
+        stage('Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
 
-		stage('Build') {
+        stage('Push') {
+            steps {
+                sh 'docker push santoshahirwar/reactstatic_test:latest'
+            }
+        }
+    }
 
-			steps {
-				sh 'docker build -t santoshahirwar/reactstatic_test:latest .'
-			}
-		}
-
-		stage('Login') {
-
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
-
-		stage('Push') {
-
-			steps {
-				sh 'docker push santoshahirwar/reactstatic_test:latest'
-			}
-		}
-	}
-
-	post {
-		always {
-			sh 'docker logout'
-		}
-	}
-
+    post {
+        always {
+            node('linux') {
+                sh 'docker logout'
+            }
+        }
+    }
 }
