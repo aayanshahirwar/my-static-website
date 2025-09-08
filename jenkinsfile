@@ -32,7 +32,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'docker build -t santoshahirwar/reactstatic_test:latest .'
+                sh 'docker build -t santoshahirwar/prontproject:latest .'
             }
         }
 
@@ -44,7 +44,7 @@ pipeline {
 
         stage('Push') {
             steps {
-                sh 'docker push santoshahirwar/reactstatic_test:latest'
+                sh 'docker push santoshahirwar/prontproject:latest'
             }
         }
     }
